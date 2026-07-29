@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-07-29",
+  "scope": "Občina Brezovica",
+  "source": "GURS ETN – javni kupoprodajni podatki",
+  "transactionCount": 816,
+  "mappedTransactionCount": 810,
+  "byContractYear": {
+    "2016": 2,
+    "2018": 10,
+    "2019": 4,
+    "2020": 43,
+    "2021": 186,
+    "2022": 152,
+    "2023": 128,
+    "2024": 108,
+    "2025": 109,
+    "2026": 74
+  },
+  "byMainCategory": {
+    "GOZDNO ZEMLJIŠČE": 62,
+    "HIŠA": 14,
+    "HIŠA S PRIPADAJOČIM ZEMLJIŠČEM": 203,
+    "KMETIJSKO ZEMLJIŠČE": 110,
+    "MEŠANI DELI STAVBE": 5,
+    "MEŠANI POSEL – STAVBA IN ZEMLJIŠČE": 28,
+    "MEŠANO/DRUGO ZEMLJIŠČE": 67,
+    "POSLOVNA/DRUGA STAVBA": 25,
+    "PRIPADAJOČE ZEMLJIŠČE": 26,
+    "STANOVANJE": 26,
+    "STANOVANJE Z DODATKI/ZEMLJIŠČEM": 58,
+    "STAVBNO ZEMLJIŠČE": 192
+  },
+  "byQuality": {
+    "A": 60,
+    "B": 408,
+    "C": 348
+  },
+  "byMarketability": {
+    "Drug posel": 103,
+    "Neopredeljen posel": 56,
+    "Tržen posel": 80,
+    "Tržen posel – neustrezni podatki": 388,
+    "V preverjanju": 189
+  },
+  "price": {
+    "minEur": 5.23,
+    "maxEur": 2006400
+  }
+}

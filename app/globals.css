@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import "ol/ol.css";
+
+:root {
+  --background: #f7f8f5;
+  --foreground: #18201c;
+  --muted: #66736c;
+  --border: #dfe5dc;
+  --surface: #ffffff;
+  --accent: #2f6f56;
+  --accent-strong: #184f3a;
+  --amber: #a86c16;
+  --blue: #2c627e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}

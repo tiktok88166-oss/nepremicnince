@@ -1,0 +1,21 @@
+node_modules
+.next
+out
+coverage
+test-results
+playwright-report
+.env
+.env.local
+*.tsbuildinfo
+npm-debug.log*
+debug.log
+__pycache__/
+*.py[cod]
+nepremicnince_codex_starter.zip
+data/raw-private/*
+!data/raw-private/.gitkeep
+data/processed/*.duckdb
+data/processed/*.sqlite
+data/processed/tmp/
+Vhodni podatki/*.zip
+Vhodni podatki/*.pdf
