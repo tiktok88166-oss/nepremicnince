@@ -19,3 +19,5 @@ data/processed/*.sqlite
 data/processed/tmp/
 Vhodni podatki/*.zip
 Vhodni podatki/*.pdf
+
+.vercel
