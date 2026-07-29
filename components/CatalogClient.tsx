@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Building2, ExternalLink, LandPlot, Search } from "lucide-react";
+import { Building2, ChevronRight, ExternalLink, LandPlot, Search } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -119,7 +119,7 @@ export function CatalogClient({ kind }: { kind: CatalogKind }) {
           </Field>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          <div className="hidden overflow-x-auto sm:block">
             <table className="w-full min-w-[760px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-[var(--border)] text-left">
@@ -152,6 +152,29 @@ export function CatalogClient({ kind }: { kind: CatalogKind }) {
                 })}
               </tbody>
             </table>
+          </div>
+          <div className="-mx-4 divide-y divide-[var(--border)] sm:hidden">
+            {pageRows.map((row) => {
+              const parcel = kind === "parcels" ? (row as ParcelIndex) : null;
+              const building = kind === "buildings" ? (row as BuildingIndex) : null;
+              return (
+                <button
+                  type="button"
+                  key={parcel?.eidParcel ?? building?.eidBuilding}
+                  className="grid w-full grid-cols-[1fr_auto] gap-3 px-4 py-3 text-left hover:bg-[#f1f5f0] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--accent)]"
+                  onClick={() => openDetail(row)}
+                >
+                  <span className="min-w-0">
+                    <span className="block font-semibold">{row.cadastralMunicipalityCode}/{parcel?.parcelNumber ?? building?.buildingNumber}</span>
+                    <span className="mt-1 block truncate text-sm">{parcel ? parcel.plannedUsePrimary ?? "Raba ni navedena" : building?.buildingType ?? "Tip ni naveden"}</span>
+                    <span className="mt-0.5 block text-sm text-[var(--muted)]">
+                      {parcel ? `${formatDecimal(parcel.areaM2, " m²")} · ${formatEur(parcel.generalisedValueTotalEur)}` : `Leto ${building?.yearBuilt ?? "ni podatka"} · ${formatNumber(building?.partCount ?? 0)} delov`}
+                    </span>
+                  </span>
+                  <ChevronRight aria-hidden="true" className="mt-3 h-5 w-5 text-[var(--muted)]" />
+                </button>
+              );
+            })}
           </div>
           <div className="mt-4 flex items-center justify-between gap-3 text-sm">
             <span>Stran {page + 1} od {pageCount}</span>

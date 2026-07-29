@@ -44,7 +44,8 @@ export function RentalsClient({ rows }: { rows: Rental[] }) {
           {visibleRows.length === 0 ? (
             <p className="py-8 text-center text-sm text-[var(--muted)]">V zbirki še ni dokončno potrjenih tržnih najemov. Za pregled prejetih zapisov vključite zgornji filter.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[940px] border-collapse text-sm">
                 <thead><tr className="border-b text-left"><th className="px-3 py-2">ID</th><th>Datum</th><th>Najemnina</th><th>Vrsta</th><th>Status</th><th>Trajanje</th><th>Sestavine</th><th>Stroški</th><th>DDV</th></tr></thead>
                 <tbody>
@@ -76,6 +77,30 @@ export function RentalsClient({ rows }: { rows: Rental[] }) {
                 </tbody>
               </table>
             </div>
+            <div className="-mx-4 divide-y divide-[var(--border)] md:hidden">
+              {visibleRows.map((row) => (
+                <article key={row.id} className="px-4 py-3">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <p className="font-semibold">{formatEur(row.contractRentEur)}</p>
+                    <p className="text-xs text-[var(--muted)]">{row.contractDate ? formatDate(row.contractDate) : "Datum ni naveden"}</p>
+                  </div>
+                  <p className="mt-1 text-sm font-medium">{row.rentalType}</p>
+                  <p className="mt-1 text-sm text-[var(--muted)]">{row.marketability} · {row.durationType}</p>
+                  <details className="mt-2 text-sm">
+                    <summary className="cursor-pointer font-medium text-[var(--accent)]">{formatNumber(row.componentCount)} sestavin</summary>
+                    <div className="mt-2 space-y-2 text-xs text-[var(--muted)]">
+                      {row.components.map((component) => (
+                        <div key={component.id} className="border-l-2 border-[var(--border)] pl-2">
+                          <p className="font-medium text-[var(--foreground)]">{component.address ?? `Stavba ${component.buildingNumber}, del ${component.buildingPartNumber}`}</p>
+                          <p>{formatDecimal(component.areaM2, " m²")} · {formatDecimal(component.rentEurM2, " EUR/m²")}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                </article>
+              ))}
+            </div>
+            </>
           )}
         </CardContent>
       </Card>

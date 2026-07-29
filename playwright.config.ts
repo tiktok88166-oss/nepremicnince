@@ -8,7 +8,7 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command: "npx.cmd next dev --hostname 127.0.0.1",
+    command: "node node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 3000",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: true,
     timeout: 120_000,

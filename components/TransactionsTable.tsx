@@ -13,9 +13,10 @@ import {
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDownUp, Download, Eye, EyeOff } from "lucide-react";
+import { ArrowDownUp, ChevronRight, Download, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select } from "@/components/ui/field";
 import { transactionsToCsv } from "@/lib/csv";
 import { withFilterSearch, type Filters } from "@/lib/filters";
 import { compactList, formatDate, formatDecimal, formatEur, formatNumber } from "@/lib/format";
@@ -130,26 +131,44 @@ export function TransactionsTable({ rows, filters }: { rows: Transaction[]; filt
     <Card>
       <CardHeader className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <CardTitle>Filtrirani posli n = {formatNumber(rows.length)}</CardTitle>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="md:hidden">
+            <span className="sr-only">Razvrsti posle</span>
+            <Select
+              className="w-auto"
+              value={`${sorting[0]?.id ?? "contractDate"}-${sorting[0]?.desc ? "desc" : "asc"}`}
+              onChange={(event) => {
+                const [id, direction] = event.target.value.split("-");
+                setSorting([{ id, desc: direction === "desc" }]);
+              }}
+            >
+              <option value="contractDate-desc">Najnovejši</option>
+              <option value="contractDate-asc">Najstarejši</option>
+              <option value="priceEur-desc">Najvišja cena</option>
+              <option value="priceEur-asc">Najnižja cena</option>
+            </Select>
+          </label>
           <Button variant="secondary" size="sm" onClick={exportCsv}>
             <Download aria-hidden="true" className="h-4 w-4" />
             CSV
           </Button>
-          {columns
-            .filter((column) => column.id !== "detail")
-            .map((column) => {
-              const id = String(column.id);
-              return (
-                <Button key={id} variant="ghost" size="sm" onClick={() => setHidden((value) => ({ ...value, [id]: !value[id] }))}>
-                  {hidden[id] ? <EyeOff aria-hidden="true" className="h-4 w-4" /> : <Eye aria-hidden="true" className="h-4 w-4" />}
-                  {typeof column.header === "string" ? column.header : id}
-                </Button>
-              );
-            })}
+          <div className="hidden flex-wrap gap-2 md:flex">
+            {columns
+              .filter((column) => column.id !== "detail")
+              .map((column) => {
+                const id = String(column.id);
+                return (
+                  <Button key={id} variant="ghost" size="sm" onClick={() => setHidden((value) => ({ ...value, [id]: !value[id] }))}>
+                    {hidden[id] ? <EyeOff aria-hidden="true" className="h-4 w-4" /> : <Eye aria-hidden="true" className="h-4 w-4" />}
+                    {typeof column.header === "string" ? column.header : id}
+                  </Button>
+                );
+              })}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[980px] border-collapse text-sm">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -179,6 +198,28 @@ export function TransactionsTable({ rows, filters }: { rows: Transaction[]; filt
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="-mx-4 divide-y divide-[var(--border)] md:hidden">
+          {table.getRowModel().rows.map((row) => {
+            const transaction = row.original;
+            return (
+              <Link
+                key={transaction.id}
+                href={withFilterSearch(`/posli/${transaction.id}`, filters)}
+                className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3 hover:bg-[#f1f5f0] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--accent)]"
+              >
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="font-semibold">{formatEur(transaction.priceEur)}</span>
+                    <span className="text-xs text-[var(--muted)]">{formatDate(transaction.contractDate)}</span>
+                  </div>
+                  <p className="mt-1 truncate text-sm font-medium">{transaction.mainCategory}</p>
+                  <p className="mt-0.5 truncate text-sm text-[var(--muted)]">{compactList(transaction.settlements)} · kakovost {transaction.quality}</p>
+                </div>
+                <ChevronRight aria-hidden="true" className="mt-4 h-5 w-5 text-[var(--muted)]" />
+              </Link>
+            );
+          })}
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
           <span>

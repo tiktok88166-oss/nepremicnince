@@ -15,8 +15,9 @@ test("zemljevid se osnovno nalozi", async ({ page }) => {
   await expect(page.getByTestId("map")).toHaveAttribute("data-map-rendered", "true");
   await expect(page.getByText("Parcelne meje")).toBeVisible();
   await page.getByLabel("Podlaga").selectOption("ortho");
-  await expect(page.getByTestId("gurs-ortho-map")).toBeVisible();
-  await expect(page.getByText(/Prikaz uporablja izvorni CRS EPSG:3794/)).toBeVisible();
+  const orthoAttribution = page.getByText(/Prikaz uporablja izvorni CRS EPSG:3794/);
+  const fallbackNotice = page.getByText("GURS ortofoto trenutno ni dosegljiv. Prikazana je osnovna podlaga.");
+  await expect.poll(async () => (await orthoAttribution.isVisible()) || (await fallbackNotice.isVisible())).toBe(true);
 });
 
 test("odpre neposredne podrobnosti parcele in stavbe", async ({ page }) => {

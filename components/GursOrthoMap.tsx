@@ -11,6 +11,7 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { get as getProjection, transform, transformExtent } from "ol/proj";
 import { register } from "ol/proj/proj4";
+import OSM from "ol/source/OSM";
 import TileWMS from "ol/source/TileWMS";
 import Cluster from "ol/source/Cluster";
 import VectorSource from "ol/source/Vector";
@@ -74,8 +75,13 @@ export function GursOrthoMap({
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    loadedParcels.current.clear();
+    loadedBuildings.current.clear();
+    const viewProjection = mode === "ortho" ? "EPSG:3794" : "EPSG:3857";
     const baseLayers: TileLayer[] = [];
-    if (mode === "ortho") {
+    if (mode === "basic") {
+      baseLayers.push(new TileLayer({ source: new OSM({ crossOrigin: "anonymous" }) }));
+    } else if (mode === "ortho") {
       wmsFailureReported.current = false;
       const wmsSource = new TileWMS({
         url: GURS_ORTHO_WMS_URL,
@@ -92,7 +98,7 @@ export function GursOrthoMap({
       });
       baseLayers.push(new TileLayer({ source: wmsSource }));
     }
-    const salesSource = new VectorSource({ features: new GeoJSON().readFeatures(salesData, { dataProjection: "EPSG:4326", featureProjection: "EPSG:3794" }) });
+    const salesSource = new VectorSource({ features: new GeoJSON().readFeatures(salesData, { dataProjection: "EPSG:4326", featureProjection: viewProjection }) });
     const clusteredSalesSource = new Cluster({ distance: 42, minDistance: 12, source: salesSource });
     const salesLayer = new VectorLayer({
       source: clusteredSalesSource,
@@ -127,7 +133,7 @@ export function GursOrthoMap({
     const map = new Map({
       target: containerRef.current,
       layers: [...baseLayers, parcelLayer, buildingLayer, salesLayer, rentalLayer],
-      view: new View({ projection: "EPSG:3794", center: transform([14.42, 45.99], "EPSG:4326", "EPSG:3794"), zoom: 9 }),
+      view: new View({ projection: viewProjection, center: transform([14.42, 45.99], "EPSG:4326", viewProjection), zoom: 9 }),
     });
     mapRef.current = map;
     const salesExtent = salesSource.getExtent();
@@ -138,7 +144,7 @@ export function GursOrthoMap({
     containerRef.current.setAttribute("data-sales-features", String(salesSource.getFeatures().length));
     map.once("rendercomplete", () => containerRef.current?.setAttribute("data-map-rendered", "true"));
     map.renderSync();
-    fetchJson<FeatureCollection>("/data/map/rentals.geojson").then((payload) => rentalLayer.getSource()?.addFeatures(new GeoJSON().readFeatures(payload, { dataProjection: "EPSG:4326", featureProjection: "EPSG:3794" }))).catch(() => undefined);
+    fetchJson<FeatureCollection>("/data/map/rentals.geojson").then((payload) => rentalLayer.getSource()?.addFeatures(new GeoJSON().readFeatures(payload, { dataProjection: "EPSG:4326", featureProjection: viewProjection }))).catch(() => undefined);
     map.on("moveend", () => void loadVisibleLayers(map, layerRefs.current, layersRef, loadedParcels, loadedBuildings));
     map.on("singleclick", (event) => {
       const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate);
@@ -169,7 +175,7 @@ export function GursOrthoMap({
       <div
         ref={containerRef}
         data-testid={mode === "ortho" ? "gurs-ortho-map" : "map"}
-        className={`${compact ? "h-[340px]" : "h-[68vh] min-h-[460px]"} w-full rounded-md border border-[var(--border)] ${mode === "none" ? "bg-white" : "bg-[#eef1ec]"}`}
+        className={`${compact ? "h-[320px] sm:h-[340px]" : "h-[58vh] min-h-[380px] sm:h-[68vh] sm:min-h-[460px]"} w-full rounded-md border border-[var(--border)] ${mode === "none" ? "bg-white" : "bg-[#eef1ec]"}`}
       />
       {selected ? <div className="absolute bottom-3 left-3 max-w-xs rounded-md border border-[var(--border)] bg-white p-3 text-sm shadow-lg"><button className="absolute right-2 top-2" aria-label="Zapri podrobnosti" onClick={() => setSelected(null)}><X aria-hidden="true" className="h-4 w-4" /></button><p className="pr-6 font-semibold">{selected.title}</p><p className="mt-1 text-[var(--muted)]">{selected.detail}</p>{selected.href ? <a className="mt-2 inline-block font-medium text-[var(--accent)]" href={selected.href}>Odpri podrobnosti</a> : null}</div> : null}
       {mode === "ortho" ? <p className="mt-2 text-xs text-[var(--muted)]">Vir ortofota: Geodetska uprava Republike Slovenije, državni ortofoto DOF050. Prikaz uporablja izvorni CRS EPSG:3794.</p> : null}
@@ -199,7 +205,8 @@ async function loadVisibleLayers(
 ) {
   const size = map.getSize();
   if (!size) return;
-  const extent = transformExtent(map.getView().calculateExtent(size), "EPSG:3794", "EPSG:4326");
+  const viewProjection = map.getView().getProjection().getCode();
+  const extent = transformExtent(map.getView().calculateExtent(size), viewProjection, "EPSG:4326");
   const zoom = map.getView().getZoom() ?? 0;
   if (layersRef.current.parcels && zoom >= 12) {
     const manifest = await getMapManifest("parcels");
@@ -209,7 +216,7 @@ async function loadVisibleLayers(
         loadedParcels.current.delete(tile.cadastralMunicipalityCode);
         throw error;
       });
-      layerRefs.parcels?.getSource()?.addFeatures(new GeoJSON().readFeatures(payload, { dataProjection: "EPSG:4326", featureProjection: "EPSG:3794" }));
+      layerRefs.parcels?.getSource()?.addFeatures(new GeoJSON().readFeatures(payload, { dataProjection: "EPSG:4326", featureProjection: viewProjection }));
     }
   }
   if (layersRef.current.buildings && zoom >= 11) {
@@ -220,7 +227,7 @@ async function loadVisibleLayers(
         loadedBuildings.current.delete(tile.cadastralMunicipalityCode);
         throw error;
       });
-      layerRefs.buildings?.getSource()?.addFeatures(new GeoJSON().readFeatures(payload, { dataProjection: "EPSG:4326", featureProjection: "EPSG:3794" }));
+      layerRefs.buildings?.getSource()?.addFeatures(new GeoJSON().readFeatures(payload, { dataProjection: "EPSG:4326", featureProjection: viewProjection }));
     }
   }
 }

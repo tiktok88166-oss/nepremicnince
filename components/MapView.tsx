@@ -53,7 +53,7 @@ export function MapView({ rows, compact = false }: { rows: EnrichedTransaction[]
           <CardTitle>Zemljevid poslov n = {formatNumber(rows.filter((item) => item.coordinate).length)}</CardTitle>
           <p className="mt-1 text-sm text-[var(--muted)]">Katastrski sloji se naložijo šele pri ustrezni povečavi.</p>
         </div>
-        <div className="flex flex-wrap items-end gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end sm:gap-4">
           <label className="grid gap-1 text-sm font-medium">
             <span>Podlaga</span>
             <Select value={baseMode} onChange={(event) => setBaseMode(event.target.value as MapBaseMode)}>
@@ -73,8 +73,8 @@ export function MapView({ rows, compact = false }: { rows: EnrichedTransaction[]
       </CardHeader>
       <CardContent className="space-y-3">
         {mapNotice ? <p className="rounded-md border border-[#ead7b7] bg-[#fff8e9] px-3 py-2 text-sm text-[#68420d]">{mapNotice}</p> : null}
-        <div className="flex flex-wrap items-center gap-4 rounded-md border border-[var(--border)] bg-[#f7f8f5] px-3 py-2">
-          <span className="inline-flex items-center gap-2 text-sm font-semibold"><Layers3 aria-hidden="true" className="h-4 w-4" />Sloji</span>
+        <div className="grid grid-cols-2 items-center gap-3 rounded-md border border-[var(--border)] bg-[#f7f8f5] px-3 py-3 sm:flex sm:flex-wrap sm:gap-4 sm:py-2">
+          <span className="col-span-2 inline-flex items-center gap-2 text-sm font-semibold sm:col-span-1"><Layers3 aria-hidden="true" className="h-4 w-4" />Sloji</span>
           <CheckboxField label="Prodajni posli" checked={layers.sales} onChange={(value) => toggleLayer("sales", value)} />
           <CheckboxField label="Najemni posli" checked={layers.rentals} onChange={(value) => toggleLayer("rentals", value)} />
           <CheckboxField label="Parcelne meje" checked={layers.parcels} onChange={(value) => toggleLayer("parcels", value)} />
