@@ -2,7 +2,7 @@ import { AlertTriangle } from "lucide-react";
 
 export function MethodWarning() {
   return (
-    <section className="rounded-lg border border-[#ead7b7] bg-[#fff8e9] p-4 text-sm text-[#68420d]">
+    <section className="rounded-lg border border-[#e6d2ad] border-l-[3px] border-l-[var(--amber)] bg-[#fff9ed] p-4 text-sm leading-6 text-[#68420d] shadow-[0_1px_2px_rgba(78,53,15,0.04)]">
       <div className="flex items-start gap-3">
         <AlertTriangle aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0" />
         <div className="space-y-1">

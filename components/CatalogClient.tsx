@@ -105,9 +105,9 @@ export function CatalogClient({ kind }: { kind: CatalogKind }) {
           <Field className="w-full sm:max-w-sm">
             <span>Iskanje</span>
             <div className="relative">
-              <Search aria-hidden="true" className="absolute left-3 top-2.5 h-4 w-4 text-[var(--muted)]" />
+              <Search aria-hidden="true" className="absolute left-3 top-3.5 h-4 w-4 text-[#75827b]" />
               <input
-                className="h-10 w-full rounded-md border border-[var(--border)] bg-white pl-9 pr-3 text-sm"
+                className="h-11 w-full rounded-md border border-[var(--border)] bg-white pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-[#8a9690] hover:border-[#b8c6bc] focus:border-[var(--accent)] focus:ring-2 focus:ring-[#28694f26]"
                 value={query}
                 onChange={(event) => {
                   setQuery(event.target.value);
@@ -121,7 +121,7 @@ export function CatalogClient({ kind }: { kind: CatalogKind }) {
         <CardContent>
           <div className="hidden overflow-x-auto sm:block">
             <table className="w-full min-w-[760px] border-collapse text-sm">
-              <thead>
+              <thead className="bg-[var(--surface-subtle)] text-[#46554d]">
                 <tr className="border-b border-[var(--border)] text-left">
                   <th className="px-3 py-2">KO</th>
                   <th className="px-3 py-2">Številka</th>
@@ -136,7 +136,7 @@ export function CatalogClient({ kind }: { kind: CatalogKind }) {
                   const parcel = kind === "parcels" ? (row as ParcelIndex) : null;
                   const building = kind === "buildings" ? (row as BuildingIndex) : null;
                   return (
-                    <tr key={parcel?.eidParcel ?? building?.eidBuilding} className="border-b border-[var(--border)] hover:bg-[#f1f5f0]">
+                    <tr key={parcel?.eidParcel ?? building?.eidBuilding} className="border-b border-[var(--border)] transition-colors hover:bg-[#f0f5f1]">
                       <td className="px-3 py-2">{row.cadastralMunicipalityCode}</td>
                       <td className="px-3 py-2 font-medium">{parcel?.parcelNumber ?? building?.buildingNumber}</td>
                       <td className="px-3 py-2">{parcel ? formatDecimal(parcel.areaM2, " m2") : building?.buildingType ?? "ni podatka"}</td>
@@ -161,17 +161,19 @@ export function CatalogClient({ kind }: { kind: CatalogKind }) {
                 <button
                   type="button"
                   key={parcel?.eidParcel ?? building?.eidBuilding}
-                  className="grid w-full grid-cols-[1fr_auto] gap-3 px-4 py-3 text-left hover:bg-[#f1f5f0] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--accent)]"
+                  className="group grid w-full grid-cols-[1fr_auto] gap-3 px-4 py-3.5 text-left transition-colors hover:bg-[#f0f5f1] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--accent)]"
                   onClick={() => openDetail(row)}
                 >
                   <span className="min-w-0">
-                    <span className="block font-semibold">{row.cadastralMunicipalityCode}/{parcel?.parcelNumber ?? building?.buildingNumber}</span>
+                    <span className="block font-semibold text-[var(--accent-strong)]">{row.cadastralMunicipalityCode}/{parcel?.parcelNumber ?? building?.buildingNumber}</span>
                     <span className="mt-1 block truncate text-sm">{parcel ? parcel.plannedUsePrimary ?? "Raba ni navedena" : building?.buildingType ?? "Tip ni naveden"}</span>
                     <span className="mt-0.5 block text-sm text-[var(--muted)]">
                       {parcel ? `${formatDecimal(parcel.areaM2, " m²")} · ${formatEur(parcel.generalisedValueTotalEur)}` : `Leto ${building?.yearBuilt ?? "ni podatka"} · ${formatNumber(building?.partCount ?? 0)} delov`}
                     </span>
                   </span>
-                  <ChevronRight aria-hidden="true" className="mt-3 h-5 w-5 text-[var(--muted)]" />
+                  <span className="mt-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#edf2ee] text-[var(--muted)] transition-colors group-hover:bg-[var(--accent-soft)] group-hover:text-[var(--accent)]">
+                    <ChevronRight aria-hidden="true" className="h-4 w-4" />
+                  </span>
                 </button>
               );
             })}

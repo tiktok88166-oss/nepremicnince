@@ -170,7 +170,7 @@ export function TransactionsTable({ rows, filters }: { rows: Transaction[]; filt
       <CardContent>
         <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[980px] border-collapse text-sm">
-            <thead>
+            <thead className="bg-[var(--surface-subtle)] text-[#46554d]">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="border-b border-[var(--border)]">
                   {headerGroup.headers.map((header) => (
@@ -188,7 +188,7 @@ export function TransactionsTable({ rows, filters }: { rows: Transaction[]; filt
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-b border-[var(--border)] hover:bg-[#f1f5f0]">
+                <tr key={row.id} className="border-b border-[var(--border)] transition-colors hover:bg-[#f0f5f1]">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-3 py-2 align-top">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -206,17 +206,19 @@ export function TransactionsTable({ rows, filters }: { rows: Transaction[]; filt
               <Link
                 key={transaction.id}
                 href={withFilterSearch(`/posli/${transaction.id}`, filters)}
-                className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3 hover:bg-[#f1f5f0] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--accent)]"
+                className="group grid grid-cols-[1fr_auto] gap-3 px-4 py-3.5 transition-colors hover:bg-[#f0f5f1] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--accent)]"
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span className="font-semibold">{formatEur(transaction.priceEur)}</span>
+                    <span className="font-semibold tabular-nums text-[var(--accent-strong)]">{formatEur(transaction.priceEur)}</span>
                     <span className="text-xs text-[var(--muted)]">{formatDate(transaction.contractDate)}</span>
                   </div>
                   <p className="mt-1 truncate text-sm font-medium">{transaction.mainCategory}</p>
                   <p className="mt-0.5 truncate text-sm text-[var(--muted)]">{compactList(transaction.settlements)} · kakovost {transaction.quality}</p>
                 </div>
-                <ChevronRight aria-hidden="true" className="mt-4 h-5 w-5 text-[var(--muted)]" />
+                <span className="mt-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#edf2ee] text-[var(--muted)] transition-colors group-hover:bg-[var(--accent-soft)] group-hover:text-[var(--accent)]">
+                  <ChevronRight aria-hidden="true" className="h-4 w-4" />
+                </span>
               </Link>
             );
           })}

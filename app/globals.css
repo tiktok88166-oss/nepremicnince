@@ -2,15 +2,17 @@
 @import "ol/ol.css";
 
 :root {
-  --background: #f7f8f5;
-  --foreground: #18201c;
-  --muted: #66736c;
-  --border: #dfe5dc;
+  --background: #f3f5f2;
+  --foreground: #17201b;
+  --muted: #5f6d65;
+  --border: #d6ded7;
   --surface: #ffffff;
-  --accent: #2f6f56;
-  --accent-strong: #184f3a;
-  --amber: #a86c16;
-  --blue: #2c627e;
+  --surface-subtle: #f8faf8;
+  --accent: #28694f;
+  --accent-strong: #16503a;
+  --accent-soft: #e5f0e9;
+  --amber: #a46710;
+  --blue: #285f7a;
 }
 
 * {
@@ -21,7 +23,9 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -33,4 +37,37 @@ button,
 input,
 select {
   font: inherit;
+}
+
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #cfe2d6;
+  color: var(--foreground);
+}
+
+.ol-control {
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 2px 8px rgba(22, 42, 31, 0.16);
+}
+
+.ol-control button {
+  background: #ffffff !important;
+  color: var(--foreground) !important;
+}
+
+.ol-control button:hover,
+.ol-control button:focus {
+  background: var(--accent-soft) !important;
+}
+
+.ol-attribution {
+  color: var(--muted);
+  font-size: 11px;
 }

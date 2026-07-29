@@ -13,7 +13,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <SiteHeader />
         {children}
-        <footer className="border-t border-[var(--border)] bg-white">
+        <footer className="border-t border-[var(--border)] bg-[var(--surface-subtle)]">
           <div className="mx-auto max-w-7xl px-3 py-5 text-sm text-[var(--muted)] sm:px-4 sm:py-6">
             Vir: Geodetska uprava Republike Slovenije, ETN, kataster nepremičnin in evidenca vrednotenja. Cena pripada celotnemu poslu.
           </div>

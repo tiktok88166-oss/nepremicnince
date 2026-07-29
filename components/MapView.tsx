@@ -73,7 +73,7 @@ export function MapView({ rows, compact = false }: { rows: EnrichedTransaction[]
       </CardHeader>
       <CardContent className="space-y-3">
         {mapNotice ? <p className="rounded-md border border-[#ead7b7] bg-[#fff8e9] px-3 py-2 text-sm text-[#68420d]">{mapNotice}</p> : null}
-        <div className="grid grid-cols-2 items-center gap-3 rounded-md border border-[var(--border)] bg-[#f7f8f5] px-3 py-3 sm:flex sm:flex-wrap sm:gap-4 sm:py-2">
+        <div className="grid grid-cols-2 items-center gap-3 rounded-md border border-[var(--border)] bg-[var(--surface-subtle)] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] sm:flex sm:flex-wrap sm:gap-4 sm:py-2.5">
           <span className="col-span-2 inline-flex items-center gap-2 text-sm font-semibold sm:col-span-1"><Layers3 aria-hidden="true" className="h-4 w-4" />Sloji</span>
           <CheckboxField label="Prodajni posli" checked={layers.sales} onChange={(value) => toggleLayer("sales", value)} />
           <CheckboxField label="Najemni posli" checked={layers.rentals} onChange={(value) => toggleLayer("rentals", value)} />

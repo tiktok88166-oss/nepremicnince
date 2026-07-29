@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
-import { ChevronDown, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ListFilter, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { defaultFilters, type Filters } from "@/lib/filters";
 import { filterOptions } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -79,9 +79,15 @@ export function FilterPanel() {
   }
 
   return (
-    <Card>
+    <Card className="border-[#cfd9d1]">
       <CardHeader className="flex flex-row items-center justify-between gap-3">
-        <CardTitle>Filtri{activeCount ? ` (${activeCount})` : ""}</CardTitle>
+        <div className="flex items-center gap-2.5">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[var(--accent-soft)] text-[var(--accent)]">
+            <ListFilter aria-hidden="true" className="h-4 w-4" />
+          </span>
+          <CardTitle>Filtri</CardTitle>
+          {activeCount ? <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-[var(--accent)] px-2 py-0.5 text-xs font-semibold text-white">{activeCount}</span> : null}
+        </div>
         <Button variant="ghost" size="sm" onClick={resetFilters} disabled={activeCount === 0 && !searchValue}>
           <RotateCcw aria-hidden="true" className="h-4 w-4" />
           Ponastavi
@@ -90,10 +96,10 @@ export function FilterPanel() {
       <CardContent className="space-y-4">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <form className="grid min-w-0 gap-1.5 md:col-span-2" onSubmit={submitSearch}>
-            <span className="text-sm font-medium">Iskanje</span>
+            <span className="text-[13px] font-semibold text-[#35443c]">Iskanje</span>
             <div className="flex min-w-0 gap-2">
               <div className="relative min-w-0 flex-1">
-                <Search aria-hidden="true" className="absolute left-3 top-2.5 h-5 w-5 text-[var(--muted)]" />
+                <Search aria-hidden="true" className="absolute left-3 top-3 h-5 w-5 text-[#75827b]" />
                 <Input className="pl-10" placeholder="ID, naslov, naselje, parcela, KO" value={searchValue} onChange={(event) => setSearchValue(event.target.value)} />
               </div>
               <Button type="submit" aria-label="Išči">Išči</Button>
@@ -139,7 +145,7 @@ export function FilterPanel() {
         </Button>
 
         {advancedOpen ? (
-          <div id="advanced-filters" className="grid gap-3 border-t border-[var(--border)] pt-4 md:grid-cols-2 xl:grid-cols-4">
+          <div id="advanced-filters" className="-mx-4 grid gap-3 border-t border-[var(--border)] bg-[var(--surface-subtle)] px-4 pb-1 pt-4 md:grid-cols-2 xl:grid-cols-4">
             <Field><span>Datum od</span><Input type="date" value={filters.dateFrom} onChange={(event) => patchFilters({ dateFrom: event.target.value })} /></Field>
             <Field><span>Datum do</span><Input type="date" value={filters.dateTo} onChange={(event) => patchFilters({ dateTo: event.target.value })} /></Field>
             <Field><span>Analitična enota</span><Select value={filters.analyticalUnit} onChange={(event) => patchFilters({ analyticalUnit: event.target.value })}><option value="">Vse enote</option>{optionList(filterOptions.analyticalUnits)}</Select></Field>

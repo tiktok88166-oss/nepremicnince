@@ -175,7 +175,7 @@ export function GursOrthoMap({
       <div
         ref={containerRef}
         data-testid={mode === "ortho" ? "gurs-ortho-map" : "map"}
-        className={`${compact ? "h-[320px] sm:h-[340px]" : "h-[58vh] min-h-[380px] sm:h-[68vh] sm:min-h-[460px]"} w-full rounded-md border border-[var(--border)] ${mode === "none" ? "bg-white" : "bg-[#eef1ec]"}`}
+        className={`${compact ? "h-[320px] sm:h-[340px]" : "h-[58vh] min-h-[380px] sm:h-[68vh] sm:min-h-[460px]"} w-full overflow-hidden rounded-md border border-[#c8d2ca] shadow-[0_2px_8px_rgba(25,42,33,0.08)] ${mode === "none" ? "bg-white" : "bg-[#eef1ec]"}`}
       />
       {selected ? <div className="absolute bottom-3 left-3 max-w-xs rounded-md border border-[var(--border)] bg-white p-3 text-sm shadow-lg"><button className="absolute right-2 top-2" aria-label="Zapri podrobnosti" onClick={() => setSelected(null)}><X aria-hidden="true" className="h-4 w-4" /></button><p className="pr-6 font-semibold">{selected.title}</p><p className="mt-1 text-[var(--muted)]">{selected.detail}</p>{selected.href ? <a className="mt-2 inline-block font-medium text-[var(--accent)]" href={selected.href}>Odpri podrobnosti</a> : null}</div> : null}
       {mode === "ortho" ? <p className="mt-2 text-xs text-[var(--muted)]">Vir ortofota: Geodetska uprava Republike Slovenije, državni ortofoto DOF050. Prikaz uporablja izvorni CRS EPSG:3794.</p> : null}
