@@ -29,7 +29,23 @@ npm run test:e2e
 
 ## Podatki
 
-Produkcijska aplikacija ne uporablja SQLite ali druge lokalne baze. V brskalniku bere statične datoteke:
+Nova prostorska faza uporablja PostgreSQL/PostGIS v Neonu za naslove, kataster,
+vrednotenja in ETN obeh občin. Neposredni povezovalni niz za uvoz je samo v
+ignorirani datoteki `.env.import.local`; vzorec je v `.env.import.example`.
+
+```bash
+python -m pip install -r requirements.txt
+python -X utf8 scripts/import_neon.py
+```
+
+Uvoz je ponovljiv in pred polnjenjem znova ustvari javni podatkovni model.
+Odpira samo izrecno dovoljene tabele ter nikoli ne bere oseb, lastnikov,
+pravic, upravljavcev ali upravnikov.
+
+Starejši del aplikacije zaradi sledljivosti še vsebuje optimizirane statične
+izvoze za Brezovico:
+
+V brskalniku bere naslednje statične datoteke:
 
 - `public/data/transactions-enriched.json`
 - `public/data/rentals.json`

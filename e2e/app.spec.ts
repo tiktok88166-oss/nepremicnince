@@ -1,55 +1,41 @@
 import { expect, test } from "@playwright/test";
 
-test("odpre podrobnosti posla iz tabele", async ({ page }) => {
-  await page.goto("/posli?q=522071", { waitUntil: "domcontentloaded" });
-  await page.getByRole("link", { name: "522071", exact: true }).click();
-  await expect(page.getByRole("heading", { name: /Posel 522071/ })).toBeVisible();
-  await expect(page.getByText("Pogodbena cena pripada celotnemu poslu")).toBeVisible();
-  await expect(page.getByText("Trenutna posplošena vrednost", { exact: true })).toBeVisible();
+test("prikaže občinski pregled in pokritost", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Ljubljana", exact: true })).toBeVisible();
+  await expect(page.getByRole("definition").filter({ hasText: "211.923" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Poiščite nepremičnino" })).toBeVisible();
 });
 
-test("zemljevid se osnovno nalozi", async ({ page }) => {
-  await page.goto("/zemljevid?onlyLocated=1", { waitUntil: "domcontentloaded" });
-  await expect(page.getByTestId("map")).toHaveAttribute("data-map-ready", "true");
-  await expect(page.getByTestId("map")).toHaveAttribute("data-sales-features", "810");
-  await expect(page.getByTestId("map")).toHaveAttribute("data-map-rendered", "true");
-  await expect(page.getByText("Parcelne meje")).toBeVisible();
-  await page.getByLabel("Podlaga").selectOption("ortho");
-  const orthoAttribution = page.getByText(/Prikaz uporablja izvorni CRS EPSG:3794/);
-  const fallbackNotice = page.getByText("GURS ortofoto trenutno ni dosegljiv. Prikazana je osnovna podlaga.");
-  await expect.poll(async () => (await orthoAttribution.isVisible()) || (await fallbackNotice.isVisible())).toBe(true);
+test("najde naslov in odpre poročilo", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.getByPlaceholder("npr. Slovenska cesta 1 ali 1723-45/2").fill("Slovenska cesta 1");
+  await page.getByRole("button", { name: "Poišči" }).click();
+  const result = page.getByRole("link", { name: /Slovenska cesta 1, Ljubljana/ });
+  await expect(result).toBeVisible();
+  await result.click();
+  await expect(page.getByRole("heading", { name: "Slovenska cesta 1, Ljubljana" })).toBeVisible();
+  await expect(page.getByText("Podatki so informativni.")).toBeVisible();
 });
 
-test("odpre neposredne podrobnosti parcele in stavbe", async ({ page }) => {
-  await page.goto("/parcele?eid=100101000002602965&ko=1724", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Parcela 1724/1126/26" })).toBeVisible();
-  await expect(page.getByText("Trenutna posplošena vrednost")).toBeVisible();
-
-  await page.goto("/stavbe?eid=100200000214576304&ko=1724", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Stavba 1724/711" })).toBeVisible();
-  await expect(page.getByText(/Deli stavbe n =/)).toBeVisible();
+test("najde parcelo po katastrskem identifikatorju", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.getByPlaceholder("npr. Slovenska cesta 1 ali 1723-45/2").fill("1723-45/2");
+  await page.getByRole("button", { name: "Poišči" }).click();
+  await expect(page.getByRole("link", { name: /Parcela 1723 45\/2/ })).toBeVisible();
 });
 
-test("zacasne najeme prikaze samo po izrecnem filtru", async ({ page }) => {
-  await page.goto("/najemi", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("V zbirki še ni dokončno potrjenih tržnih najemov.")).toBeVisible();
-  await page.getByLabel("Prikaži tudi začasne in netržne posle").check();
-  await expect(page.getByText("Najemni posli n = 21")).toBeVisible();
-  await expect(page.getByText("V preverjanju").first()).toBeVisible();
+test("zemljevid naloži podlago in podatke", async ({ page }) => {
+  await page.goto("/zemljevid", { waitUntil: "domcontentloaded" });
+  await expect(page.getByLabel("Interaktivni zemljevid poslov")).toBeVisible();
+  await expect(page.getByText(/lokacij$/)).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator(".ol-layer canvas").first()).toBeVisible();
 });
 
-test("ob napaki ortofota varno preklopi na osnovni zemljevid", async ({ page }) => {
-  await page.route("https://ipi.eprostor.gov.si/**", (route) => route.abort());
-  await page.goto("/zemljevid?onlyLocated=1", { waitUntil: "domcontentloaded" });
-  await page.getByLabel("Podlaga").selectOption("ortho");
-  await expect(page.getByText("GURS ortofoto trenutno ni dosegljiv. Prikazana je osnovna podlaga.")).toBeVisible();
-  await expect(page.getByTestId("map")).toBeVisible();
-});
-
-test("mobilni katalog nima vodoravnega preliva", async ({ page }) => {
+test("mobilni pregled nima vodoravnega preliva", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/parcele", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Parcele" })).toBeVisible();
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Ljubljana", exact: true })).toBeVisible();
   await expect.poll(() => page.evaluate(() => document.body.scrollWidth)).toBeLessThanOrEqual(390);
   await expect(page.locator("main")).toHaveCSS("width", "390px");
 });

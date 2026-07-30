@@ -3,8 +3,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Nepremičnince | ETN Brezovica",
-  description: "Pregled in analiza javnih kupoprodajnih podatkov GURS ETN za občino Brezovica.",
+  title: "Nepremičnince | Prostorski pregled",
+  description: "Pregled javnih podatkov GURS za nepremičnine v Ljubljani in Brezovici.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -15,7 +15,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <footer className="border-t border-[var(--border)] bg-[var(--surface-subtle)]">
           <div className="mx-auto max-w-7xl px-3 py-5 text-sm text-[var(--muted)] sm:px-4 sm:py-6">
-            Vir: Geodetska uprava Republike Slovenije, ETN, kataster nepremičnin in evidenca vrednotenja. Cena pripada celotnemu poslu.
+            Vir: Geodetska uprava Republike Slovenije, ETN, kataster nepremičnin, register naslovov in evidenca vrednotenja. Cena lahko pripada celotnemu poslu.
           </div>
         </footer>
       </body>

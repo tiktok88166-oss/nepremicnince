@@ -8,12 +8,9 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { href: "/", label: "Pregled" },
-  { href: "/posli", label: "Prodajni posli" },
-  { href: "/najemi", label: "Najemni posli" },
-  { href: "/zemljevid", label: "Zemljevid" },
-  { href: "/parcele", label: "Parcele" },
-  { href: "/stavbe", label: "Stavbe" },
   { href: "/analiza", label: "Analize" },
+  { href: "/zemljevid", label: "Zemljevid" },
+  { href: "/pokritost", label: "Pokritost" },
   { href: "/metodologija", label: "Metodologija" },
 ];
 

@@ -6,6 +6,7 @@ test-results
 playwright-report
 .env
 .env.local
+.env.import.local
 *.tsbuildinfo
 npm-debug.log*
 debug.log
@@ -17,7 +18,13 @@ data/raw-private/*
 data/processed/*.duckdb
 data/processed/*.sqlite
 data/processed/tmp/
+Vhodni podatki/**/*.zip
+Vhodni podatki/**/*.pdf
 Vhodni podatki/*.zip
 Vhodni podatki/*.pdf
 
 .vercel
+
+.env*
+!.env.example
+!.env.import.example
