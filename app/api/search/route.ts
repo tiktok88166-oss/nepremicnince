@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { normalizeMunicipality, searchProperties } from "@/lib/property-repository";
+import { normalizeSearchMunicipality, searchProperties } from "@/lib/property-repository";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get("q") ?? "";
-  const municipality = normalizeMunicipality(request.nextUrl.searchParams.get("municipality"));
+  const municipality = normalizeSearchMunicipality(request.nextUrl.searchParams.get("municipality"));
   try {
     const results = await searchProperties(query, municipality);
     return NextResponse.json({ results });

@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export function Field({ className, ...props }: React.HTMLAttributes<HTMLLabelElement>) {
-  return <label className={cn("grid min-w-0 gap-1.5 text-[13px] font-semibold text-[#35443c]", className)} {...props} />;
+  return <label className={cn("grid min-w-0 gap-1.5 text-[13px] font-semibold text-[var(--foreground)]", className)} {...props} />;
 }
 
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
@@ -10,7 +10,7 @@ export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={cn(
-        "h-11 min-w-0 w-full rounded-md border border-[var(--border)] bg-white px-3 text-sm text-[var(--foreground)] outline-none transition-colors placeholder:text-[#8a9690] hover:border-[#b8c6bc] focus:border-[var(--accent)] focus:ring-2 focus:ring-[#28694f26]",
+        "h-11 min-w-0 w-full rounded-md border border-[var(--border)] bg-white px-3 text-sm text-[var(--foreground)] outline-none transition-colors placeholder:text-[#87949a] hover:border-[#aebcc2] focus:border-[var(--accent)] focus:ring-2 focus:ring-[#146b6f26]",
         props.className,
       )}
     />
@@ -22,7 +22,7 @@ export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <select
       {...props}
       className={cn(
-        "h-11 min-w-0 w-full rounded-md border border-[var(--border)] bg-white px-3 text-sm text-[var(--foreground)] outline-none transition-colors hover:border-[#b8c6bc] focus:border-[var(--accent)] focus:ring-2 focus:ring-[#28694f26]",
+        "h-11 min-w-0 w-full rounded-md border border-[var(--border)] bg-white px-3 text-sm text-[var(--foreground)] outline-none transition-colors hover:border-[#aebcc2] focus:border-[var(--accent)] focus:ring-2 focus:ring-[#146b6f26]",
         props.className,
       )}
     />

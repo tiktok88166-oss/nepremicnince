@@ -2,25 +2,26 @@
 
 import { FormEvent, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Building2, LandPlot, LoaderCircle, MapPin, Search } from "lucide-react";
-import type { MunicipalityCode, PropertyType } from "@/lib/property-repository";
+import { ArrowRight, Building2, LandPlot, LoaderCircle, MapPin, ReceiptText, Search, SlidersHorizontal } from "lucide-react";
+import type { MunicipalityCode, SearchMunicipality, SearchResultType } from "@/lib/property-repository";
 import { Select } from "@/components/ui/field";
 
-type Result = { type: PropertyType; id: string; label: string; detail: string | null };
+type Result = { type: SearchResultType; id: string; label: string; detail: string | null };
 
 const icons = {
   address: MapPin,
   parcel: LandPlot,
   building: Building2,
   "building-part": Building2,
+  sale: ReceiptText,
 };
 
 export function PropertySearch({ initialMunicipality = "061" }: { initialMunicipality?: MunicipalityCode }) {
-  const [municipality, setMunicipality] = useState<MunicipalityCode>(initialMunicipality);
+  const [municipality, setMunicipality] = useState<SearchMunicipality>(initialMunicipality);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("Vnesite naslov, parcelo ali identifikator stavbe.");
+  const [message, setMessage] = useState("Vnesite naslov, parcelo, stavbo ali ID posla.");
   const controller = useRef<AbortController | null>(null);
 
   async function runSearch(term = query) {
@@ -47,10 +48,10 @@ export function PropertySearch({ initialMunicipality = "061" }: { initialMunicip
     }
   }
 
-  function changeMunicipality(next: MunicipalityCode) {
+  function changeMunicipality(next: SearchMunicipality) {
     setMunicipality(next);
     setResults([]);
-    setMessage("Vnesite naslov, parcelo ali identifikator stavbe.");
+    setMessage("Vnesite naslov, parcelo, stavbo ali ID posla.");
   }
 
   function submit(event: FormEvent) {
@@ -64,15 +65,19 @@ export function PropertySearch({ initialMunicipality = "061" }: { initialMunicip
         <div className="mb-4 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
             <h2 id="property-search-title" className="text-xl font-semibold sm:text-2xl">Poiščite nepremičnino</h2>
-            <p className="mt-1 text-sm text-[var(--muted)]">Naslov, številka parcele, stavbe ali dela stavbe.</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">Naslov, katastrski identifikator ali ID evidentiranega posla.</p>
           </div>
-          <label className="grid gap-1 text-xs font-semibold text-[var(--muted)] sm:w-48">
-            Občina
-            <Select value={municipality} onChange={(event) => changeMunicipality(event.target.value as MunicipalityCode)}>
-              <option value="061">Ljubljana</option>
-              <option value="008">Brezovica</option>
-            </Select>
-          </label>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+            <Link href="/iskanje" className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[var(--border)] bg-[var(--surface-subtle)] px-3 text-sm font-semibold hover:border-[var(--accent)]"><SlidersHorizontal aria-hidden="true" className="h-4 w-4" /> Iskanje po bazi</Link>
+            <label className="grid gap-1 text-xs font-semibold text-[var(--muted)] sm:w-48">
+              Občina
+              <Select value={municipality} onChange={(event) => changeMunicipality(event.target.value as SearchMunicipality)}>
+                <option value="all">Vsa podprta območja</option>
+                <option value="061">Ljubljana</option>
+                <option value="008">Brezovica</option>
+              </Select>
+            </label>
+          </div>
         </div>
         <form onSubmit={submit} className="flex min-w-0 gap-2">
           <label className="relative min-w-0 flex-1">
@@ -82,7 +87,7 @@ export function PropertySearch({ initialMunicipality = "061" }: { initialMunicip
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               className="h-12 w-full min-w-0 rounded-md border border-[var(--border)] bg-white pl-10 pr-3 text-base outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[#28694f26]"
-              placeholder="npr. Slovenska cesta 1 ali 1723-45/2"
+              placeholder="Vnesite naslov, parcelo, stavbo ali ID posla"
               autoComplete="street-address"
             />
           </label>
@@ -98,7 +103,7 @@ export function PropertySearch({ initialMunicipality = "061" }: { initialMunicip
                 const Icon = icons[result.type];
                 return (
                   <li key={`${result.type}-${result.id}`}>
-                    <Link href={`/nepremicnina/${result.type}/${encodeURIComponent(result.id)}`} className="flex min-h-16 items-center gap-3 px-1 py-3 hover:bg-[var(--surface-subtle)] sm:px-3">
+                    <Link href={result.type === "sale" ? `/posel/${encodeURIComponent(result.id)}` : `/nepremicnina/${result.type}/${encodeURIComponent(result.id)}`} className="flex min-h-16 items-center gap-3 px-1 py-3 hover:bg-[var(--surface-subtle)] sm:px-3">
                       <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--accent-soft)] text-[var(--accent-strong)]"><Icon aria-hidden="true" className="h-5 w-5" /></span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold sm:text-base">{result.label}</span>

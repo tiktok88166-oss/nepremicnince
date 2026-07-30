@@ -1,7 +1,7 @@
 {
   "name": "nepremicnince",
   "version": "1.0.0",
-  "description": "Javna spletna aplikacija za pregled in analizo GURS ETN poslov v obcini Brezovica.",
+  "description": "Prostorski pregled in analiza javnih podatkov GURS za nepremicnine v Ljubljani in Brezovici.",
   "private": true,
   "directories": {
     "doc": "docs"

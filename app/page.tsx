@@ -17,28 +17,37 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   return (
     <main>
       <section className="mx-auto max-w-7xl px-3 py-6 sm:px-4 sm:py-9">
-        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
           <div className="max-w-3xl">
-            <p className="mb-2 text-sm font-semibold text-[var(--accent-strong)]">Prostorski pregled nepremičnin</p>
-            <h1 className="text-3xl font-semibold tracking-normal sm:text-5xl">{municipalityName}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)] sm:text-base">Javni podatki GURS o naslovih, parcelah, stavbah, vrednotenju ter prodajnih in najemnih poslih na enem mestu.</p>
+            <p className="mb-2 text-sm font-semibold text-[var(--accent-strong)]">Nepremičninski pregledovalnik</p>
+            <h1 className="text-3xl font-semibold tracking-normal sm:text-5xl">Pregled nepremičnine</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)] sm:text-base">Poiščite konkretno nepremičnino ter na enem mestu preverite kataster, vrednotenje, zgodovino in primerljive prodaje.</p>
           </div>
-          <div className="inline-flex w-fit rounded-md border border-[var(--border)] bg-white p-1" aria-label="Izbira občine">
-            <Link className={`rounded px-3 py-2 text-sm font-semibold ${municipality === "061" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"}`} href="/?municipality=061">Ljubljana</Link>
-            <Link className={`rounded px-3 py-2 text-sm font-semibold ${municipality === "008" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"}`} href="/?municipality=008">Brezovica</Link>
+          <div>
+            <p className="mb-1.5 text-xs font-semibold text-[var(--muted)]">Območje pregleda</p>
+            <div className="inline-flex w-fit rounded-md border border-[var(--border)] bg-white p-1" aria-label="Izbira občine">
+              <Link className={`rounded px-3 py-2 text-sm font-semibold ${municipality === "061" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"}`} href="/?municipality=061">Ljubljana</Link>
+              <Link className={`rounded px-3 py-2 text-sm font-semibold ${municipality === "008" ? "bg-[var(--accent)] text-white" : "text-[var(--muted)]"}`} href="/?municipality=008">Brezovica</Link>
+            </div>
           </div>
-        </div>
-        <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-[var(--border)] bg-[var(--border)] lg:grid-cols-4">
-          <Metric icon={LandPlot} label="Parcele" value={coverage ? formatNumber(Number(coverage.parcels)) : "-"} />
-          <Metric icon={Building2} label="Stavbe" value={coverage ? formatNumber(Number(coverage.buildings)) : "-"} />
-          <Metric icon={FileSearch} label="Potrjene prodaje" value={market ? formatNumber(Number(market.confirmed_sales)) : "-"} />
-          <Metric icon={Database} label="Mediana cene" value={market?.median_price ? formatEur(Number(market.median_price)) : "-"} />
         </div>
       </section>
 
       <PropertySearch initialMunicipality={municipality} />
 
       <section className="mx-auto max-w-7xl px-3 py-7 sm:px-4 sm:py-10">
+        <div className="mb-7">
+          <div className="mb-3 flex items-end justify-between gap-3">
+            <div><h2 className="text-xl font-semibold sm:text-2xl">Trg in pokritost · {municipalityName}</h2><p className="mt-1 text-sm text-[var(--muted)]">Za hiter občutek o obsegu podatkov in tržni aktivnosti.</p></div>
+            <Link href={`/pokritost`} className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent-strong)]">Viri <ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
+          </div>
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-[var(--border)] bg-[var(--border)] lg:grid-cols-4">
+            <Metric icon={LandPlot} label="Parcele" value={coverage ? formatNumber(Number(coverage.parcels)) : "-"} />
+            <Metric icon={Building2} label="Stavbe" value={coverage ? formatNumber(Number(coverage.buildings)) : "-"} />
+            <Metric icon={FileSearch} label="Potrjene prodaje" value={market ? formatNumber(Number(market.confirmed_sales)) : "-"} />
+            <Metric icon={Database} label="Mediana cene" value={market?.median_price ? formatEur(Number(market.median_price)) : "-"} />
+          </div>
+        </div>
         <div className="grid gap-7 lg:grid-cols-[1.35fr_0.65fr]">
           <div>
             <div className="mb-4 flex items-end justify-between gap-3">
