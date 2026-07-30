@@ -71,3 +71,24 @@ select {
   color: var(--muted);
   font-size: 11px;
 }
+
+@media print {
+  header,
+  footer,
+  .report-actions {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  table {
+    break-inside: avoid;
+  }
+}

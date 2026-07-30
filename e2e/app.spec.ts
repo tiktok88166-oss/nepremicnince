@@ -16,6 +16,9 @@ test("najde naslov in odpre poročilo", async ({ page }) => {
   await result.click();
   await expect(page.getByRole("heading", { name: "Slovenska cesta 1, Ljubljana" })).toBeVisible();
   await expect(page.getByText("Podatki so informativni.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Primerljive prodaje v bližini" })).toBeVisible();
+  await page.getByRole("button", { name: "Shrani" }).click();
+  await expect(page.getByText("Poročilo je shranjeno v tem brskalniku")).toBeVisible();
 });
 
 test("najde parcelo po katastrskem identifikatorju", async ({ page }) => {
@@ -30,6 +33,14 @@ test("zemljevid naloži podlago in podatke", async ({ page }) => {
   await expect(page.getByLabel("Interaktivni zemljevid poslov")).toBeVisible();
   await expect(page.getByText(/lokacij$/)).toBeVisible({ timeout: 20_000 });
   await expect(page.locator(".ol-layer canvas").first()).toBeVisible();
+});
+
+test("primerja Ljubljano in Brezovico", async ({ page }) => {
+  await page.goto("/primerjava", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Primerjava občin" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Prodajna aktivnost po letih" })).toBeVisible();
+  await expect(page.getByText("Ljubljana · prodaje")).toBeVisible();
+  await expect(page.getByText("Brezovica · prodaje")).toBeVisible();
 });
 
 test("mobilni pregled nima vodoravnega preliva", async ({ page }) => {

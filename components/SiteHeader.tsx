@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { href: "/", label: "Pregled" },
   { href: "/analiza", label: "Analize" },
+  { href: "/primerjava", label: "Primerjava" },
   { href: "/zemljevid", label: "Zemljevid" },
   { href: "/pokritost", label: "Pokritost" },
   { href: "/metodologija", label: "Metodologija" },

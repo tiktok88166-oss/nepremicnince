@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, Building2, CalendarDays, CircleAlert, Euro, LandPlot, MapPin, Ruler } from "lucide-react";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
+import { ReportActions } from "@/components/ReportActions";
 import { formatDate, formatDecimal, formatEur, formatNumber } from "@/lib/format";
 import { getPropertyReport, type PropertyType } from "@/lib/property-repository";
 
@@ -21,7 +22,10 @@ export default async function PropertyReportPage({ params }: { params: Promise<{
 
   return (
     <PageShell title={title} subtitle={`Poročilo za posamezno nepremičnino · ${municipality}`}>
-      <Link href={`/?municipality=${String(property.municipality_code)}`} className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent-strong)]"><ArrowLeft aria-hidden="true" className="h-4 w-4" /> Nazaj na iskanje</Link>
+      <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <Link href={`/?municipality=${String(property.municipality_code)}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent-strong)]"><ArrowLeft aria-hidden="true" className="h-4 w-4" /> Nazaj na iskanje</Link>
+        <ReportActions reportId={`${rawType}:${id}`} title={title} />
+      </div>
 
       <div className="grid gap-px overflow-hidden rounded-md border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-4">
         {property.address ? <Fact icon={MapPin} label="Naslov" value={String(property.address)} /> : null}
@@ -52,8 +56,17 @@ export default async function PropertyReportPage({ params }: { params: Promise<{
       {report.parts.length ? (
         <section className="mt-8" aria-labelledby="parts-title">
           <h2 id="parts-title" className="text-xl font-semibold sm:text-2xl">Povezani deli stavbe</h2>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 grid max-h-[34rem] gap-2 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
             {report.parts.slice(0, 60).map((part) => <Link key={String(part.eid)} href={`/nepremicnina/building-part/${encodeURIComponent(String(part.eid))}`} className="flex items-center justify-between gap-3 rounded-md border border-[var(--border)] bg-white p-3 hover:border-[var(--accent)]"><span className="min-w-0"><span className="block font-semibold">Del {String(part.part_number)}</span><span className="block truncate text-xs text-[var(--muted)]">{String(part.actual_use ?? "Raba ni navedena")}</span></span><span className="text-sm text-[var(--muted)]">{part.usable_area_m2 == null ? "" : formatDecimal(Number(part.usable_area_m2), " m²")}</span></Link>)}
+          </div>
+        </section>
+      ) : null}
+
+      {report.comparables.length ? (
+        <section className="mt-8" aria-labelledby="comparables-title">
+          <div className="mb-4"><h2 id="comparables-title" className="text-xl font-semibold sm:text-2xl">Primerljive prodaje v bližini</h2><p className="mt-1 text-sm text-[var(--muted)]">Potrjeni enosestavinski posli do 2 km, pri znani površini z odstopanjem največ 40 %.</p></div>
+          <div className="overflow-x-auto border-y border-[var(--border)] bg-white">
+            <table className="w-full min-w-[680px] text-left text-sm"><thead className="bg-[var(--surface-subtle)] text-xs text-[var(--muted)]"><tr><th className="px-4 py-3">Datum</th><th className="px-4 py-3">Vrsta</th><th className="px-4 py-3">Površina</th><th className="px-4 py-3">Cena</th><th className="px-4 py-3">Cena/m²</th><th className="px-4 py-3">Oddaljenost</th></tr></thead><tbody className="divide-y divide-[var(--border)]">{report.comparables.map((row) => <tr key={String(row.source_key)}><td className="px-4 py-3">{formatDate(row.contract_date ? String(row.contract_date) : null)}</td><td className="px-4 py-3">{String(row.property_type ?? "ni podatka")}</td><td className="px-4 py-3 tabular-nums">{formatDecimal(Number(row.sold_area_m2), " m²")}</td><td className="px-4 py-3 font-semibold tabular-nums">{formatEur(Number(row.price_eur))}</td><td className="px-4 py-3 tabular-nums">{formatEur(Number(row.price_eur_m2))}</td><td className="px-4 py-3 tabular-nums">{formatNumber(Number(row.distance_m))} m</td></tr>)}</tbody></table>
           </div>
         </section>
       ) : null}

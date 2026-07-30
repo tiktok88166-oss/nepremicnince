@@ -49,6 +49,11 @@ export async function getCoverage() {
   return requireDatabase()`SELECT * FROM data_coverage ORDER BY code`;
 }
 
+export async function getMunicipalityComparison() {
+  const [ljubljana, brezovica] = await Promise.all([getOverview("061"), getOverview("008")]);
+  return { ljubljana, brezovica };
+}
+
 export async function searchProperties(query: string, municipality: MunicipalityCode, limit = 20) {
   if (!databaseConfigured || query.trim().length < 2) return [];
   const sql = requireDatabase();
@@ -118,7 +123,8 @@ export async function getPropertyReport(type: PropertyType, id: string) {
         AND sc.parcel_number = ${property.parcel_number}
       ORDER BY s.contract_date DESC NULLS LAST
     `;
-    return { type, property, sales, rentals: [], parts: [] };
+    const comparables = await comparableSales("parcel", property.e, property.n, property.area_m2);
+    return { type, property, sales, rentals: [], parts: [], comparables };
   }
   if (type === "building") {
     const [property] = await sql`SELECT * FROM buildings WHERE eid = ${id}`;
@@ -131,11 +137,12 @@ export async function getPropertyReport(type: PropertyType, id: string) {
         AND sc.building_number = ${property.building_number}
       ORDER BY s.contract_date DESC NULLS LAST
     `;
-    return { type, property, sales, rentals: [], parts };
+    const comparables = await comparableSales("building_part", property.e, property.n, property.area_m2);
+    return { type, property, sales, rentals: [], parts, comparables };
   }
   if (type === "building-part") {
     const [property] = await sql`
-      SELECT bp.*, b.cadastral_municipality_code, b.building_number, b.year_built, a.label AS address
+      SELECT bp.*, b.cadastral_municipality_code, b.building_number, b.year_built, b.e, b.n, a.label AS address
       FROM building_parts bp JOIN buildings b ON b.eid = bp.building_eid
       LEFT JOIN LATERAL (SELECT label FROM addresses WHERE house_number_eid = bp.house_number_eid LIMIT 1) a ON true
       WHERE bp.eid = ${id}
@@ -157,7 +164,8 @@ export async function getPropertyReport(type: PropertyType, id: string) {
         AND rc.building_part_number = ${property.part_number}
       ORDER BY r.contract_date DESC NULLS LAST
     `;
-    return { type, property, sales, rentals, parts: [] };
+    const comparables = await comparableSales("building_part", property.e, property.n, property.usable_area_m2 ?? property.area_m2);
+    return { type, property, sales, rentals, parts: [], comparables };
   }
   const [property] = await sql`SELECT * FROM addresses WHERE eid = ${id}`;
   if (!property) return null;
@@ -168,5 +176,28 @@ export async function getPropertyReport(type: PropertyType, id: string) {
         WHERE bp.building_eid = ${property.building_eid} ORDER BY bp.part_number
       `
     : [];
-  return { type, property, sales: [], rentals: [], parts };
+  const comparables = await comparableSales("building_part", property.e, property.n, null);
+  return { type, property, sales: [], rentals: [], parts, comparables };
+}
+
+async function comparableSales(componentType: "parcel" | "building_part", e: unknown, n: unknown, area: unknown) {
+  const east = Number(e);
+  const north = Number(n);
+  const targetArea = area == null ? null : Number(area);
+  if (!Number.isFinite(east) || !Number.isFinite(north)) return [];
+  const sql = requireDatabase();
+  return sql`
+    SELECT s.source_key, s.contract_date, s.price_eur, sc.property_type, sc.sold_area_m2,
+      round((s.price_eur / NULLIF(sc.sold_area_m2, 0))::numeric, 0) AS price_eur_m2,
+      round(sqrt(power(sc.e - ${east}, 2) + power(sc.n - ${north}, 2))::numeric, 0) AS distance_m
+    FROM sale_components sc JOIN sales s ON s.source_key = sc.sale_key
+    WHERE sc.component_type = ${componentType} AND NOT s.is_pending
+      AND s.component_count = 1 AND s.price_eur > 0 AND sc.sold_area_m2 > 0
+      AND sc.e BETWEEN ${east - 2000} AND ${east + 2000}
+      AND sc.n BETWEEN ${north - 2000} AND ${north + 2000}
+      AND sqrt(power(sc.e - ${east}, 2) + power(sc.n - ${north}, 2)) <= 2000
+      AND (${targetArea}::double precision IS NULL OR sc.sold_area_m2 BETWEEN ${targetArea == null ? 0 : targetArea * 0.6} AND ${targetArea == null ? 1e12 : targetArea * 1.4})
+    ORDER BY s.contract_date DESC NULLS LAST, distance_m
+    LIMIT 8
+  `;
 }
